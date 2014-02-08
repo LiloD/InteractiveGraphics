@@ -1,0 +1,16 @@
+#version 330
+
+out vec4 out_color;
+//in float color;
+void main()
+{
+	out_color = vec4(1.0f,1.0f,1.0f,1.0f);
+	//if(color == 1.0f)
+	//{
+	//	out_color = vec4(1.0f,1.0f,1.0f,1.0f);
+	//}
+	//if(color == 0.0f)
+	//{
+	//	out_color = vec4(0.0f,0.0f,0.0f,1.0f);
+	//}
+}
