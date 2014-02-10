@@ -1,0 +1,16 @@
+#version 330
+
+out vec4 out_color;
+uniform int selected;
+
+void main()
+{
+	if(selected == 1)
+	{
+		out_color = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	}else if(selected == 2){
+		out_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	}else{
+		out_color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+}
