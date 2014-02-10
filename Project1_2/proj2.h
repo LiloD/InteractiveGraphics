@@ -1,5 +1,5 @@
-#ifndef _PROJ1_H
-#define _PROJ1_H
+#ifndef _PROJ2_H
+#define _PROJ2_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -31,6 +31,7 @@ void DestroyVBO(void);
 void CreateShaders(void);
 void DestroyShaders(void);
 void MouseClick(int, int, int, int);
+void KeyboardFunc(unsigned char key, int x, int y);
 bool ifInVectorInt(std::vector<int> , int );
 void removeWalls();
-#endif //_PROJ1_H
+#endif //_PROJ2_H

@@ -1,4 +1,4 @@
-#include "proj1.h"
+#include "proj2.h"
 
 using namespace std;
 
@@ -233,10 +233,22 @@ void InitWindow(int argc, char* argv[])
 	//The value to pass to the function
 	glutTimerFunc(0, TimerFunction, 0);
 	glutMouseFunc(MouseClick);
+	glutKeyboardFunc(KeyboardFunc);
 	glutCloseFunc(Cleanup);
 }
 
 
+void KeyboardFunc(unsigned char key, int x, int y)
+{
+	switch(key)
+	{
+	case 'q':
+		exit(1);
+		break;
+	default:
+		break;
+	}
+}
 
 
 void CreateShaders(void)
