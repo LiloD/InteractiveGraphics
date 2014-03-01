@@ -50,6 +50,7 @@ void CreateNormals();
 glm::vec3 GetVertexData(int i);
 int CheckPoints(glm::vec3 point);
 void GetExitFace(int index);
+glm::vec3 GenRandomStart();
 
 
 GLfloat vertices_data[] = 
@@ -286,7 +287,6 @@ int CheckPoints(glm::vec3 point)
 }
 
 
-
 glm::vec3 GetVertexData(int i)
 {
 	return glm::vec3(
@@ -308,6 +308,16 @@ glm::vec3 GenRandomDisplacement()
 	
 }
 
+
+
+glm::vec3 GenRandomStart()
+{
+	srand(time(NULL));
+	float x = 0.6f  - 1.2f*((float)(rand()%100000)/100000.0f);
+	float y = 0.6f  - 1.2f*((float)(rand()%100000)/100000.0f);
+	float z = 0.45f - 0.9f*((float)(rand()%100000)/100000.0f);
+	return glm::vec3(x,y,z);
+}
 
 void animate(int value)
 {
@@ -432,7 +442,7 @@ void InitWindow(int argc, char* argv[])
 	//RGBA refers to color mode
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA); 
 
-	WindowHandle = glutCreateWindow("CS537 Interactive Graphics Project 1_3 by Zhizhuo Ding");
+	WindowHandle = glutCreateWindow("CS537 Interactive Graphics Project 2_1 by Zhizhuo Ding");
 
 	if(WindowHandle < 1)
 	{
@@ -546,7 +556,8 @@ void CreateVBO(void)
 	
 	//Init track first start at (0,0,0)
 	trackShaderProgram->use();
-	track_points.push_back(glm::vec3(0.0f,0.0f,0.0f));
+	//track_points.push_back(glm::vec3(0.0f,0.0f,0.0f));
+	track_points.push_back(GenRandomStart());
 	glGenBuffers(1,&trackVbo);
 	glBindBuffer(GL_ARRAY_BUFFER,trackVbo);
 	glBufferData(GL_ARRAY_BUFFER,track_points.size()*sizeof(glm::vec3),&track_points[0],GL_STATIC_DRAW);
