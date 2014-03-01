@@ -37,6 +37,8 @@ vector<glm::vec3> track_points;
 vector<glm::vec3> face_normals;
 
 bool bComplete = false;
+bool bStart = false;
+bool bPause = false;
 
 //the exit face
 GLuint exitVao;
@@ -321,7 +323,7 @@ glm::vec3 GenRandomStart()
 
 void animate(int value)
 {
-	if(!bComplete)
+	if(!bComplete&&!bPause)
 	{
 		glm::vec3 old_point = *(--track_points.end());
 		glm::vec3 displacement = GenRandomDisplacement();
@@ -371,9 +373,12 @@ void Initialize(int argc, char* argv[])
 	std::cout<<"INFO: OpenGL Version: "<<glGetString(GL_VERSION)<<std::endl;
 	
 	
+	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_PROGRAM_POINT_SIZE);
+
+	//glEnable(GL_DEPTH_TEST);
 
 	CreateShaders();
 	CreateVBO();
@@ -464,7 +469,7 @@ void InitWindow(int argc, char* argv[])
 	//The value to pass to the function
 	//glutTimerFunc(0, TimerFunction, 0);
 	
-	glutTimerFunc(1000, animate, 0);
+	//glutTimerFunc(1000, animate, 0);
 	
 	glutMouseFunc(MouseClick);
 	glutMotionFunc(MotionFunc);
@@ -641,36 +646,42 @@ void RenderFunction(void)
 	glDrawElements(GL_LINES,i,GL_UNSIGNED_INT,0);
 	
 
-	//draw track
-	trackShaderProgram->use();
-	view = camera.ViewMatrix();
-	trackShaderProgram->SetUniform("view", view);
-
-
-
-	glBindBuffer(GL_ARRAY_BUFFER,trackVbo);
-	glBufferData(GL_ARRAY_BUFFER,track_points.size()*sizeof(glm::vec3),&track_points[0],GL_STATIC_DRAW);
-	glBindVertexArray(trackVao);
-
-	trackShaderProgram->SetUniform("flag", 1);
-	glPointSize(10);
-	glDrawArrays(GL_POINTS,0,1);
-
-	trackShaderProgram->SetUniform("flag", 2);
-	glDrawArrays(GL_LINE_STRIP,0,track_points.size());
-
-	//if complete draw the exit face
-	if(bComplete)
+	
+	
+	if(bStart)
 	{
+		//draw track
+		trackShaderProgram->use();
+		view = camera.ViewMatrix();
+		trackShaderProgram->SetUniform("view", view);
+	
+		glBindBuffer(GL_ARRAY_BUFFER,trackVbo);
+		glBufferData(GL_ARRAY_BUFFER,track_points.size()*sizeof(glm::vec3),&track_points[0],GL_STATIC_DRAW);
+		glBindVertexArray(trackVao);
+
+		if(bComplete)
+		{
+			//if complete draw the exit face
+			trackShaderProgram->SetUniform("flag", 0);
+			glBindBuffer(GL_ARRAY_BUFFER,exitVbo);
+			glBufferData(GL_ARRAY_BUFFER,exit_face.size()*sizeof(glm::vec3),&exit_face[0],GL_STATIC_DRAW);
+			glBindVertexArray(exitVao);
+			glDrawArrays(GL_TRIANGLES,0,exit_face.size());
+
+			glBindVertexArray(trackVao);
+			trackShaderProgram->SetUniform("flag", 1);
+			glPointSize(10);
+			glDrawArrays(GL_POINTS,track_points.size()-2,1);
+		}
+
+
+		glBindVertexArray(trackVao);
 		trackShaderProgram->SetUniform("flag", 1);
 		glPointSize(10);
-		glDrawArrays(GL_POINTS,track_points.size()-2,1);
+		glDrawArrays(GL_POINTS,0,1);
 
-		trackShaderProgram->SetUniform("flag", 0);
-		glBindBuffer(GL_ARRAY_BUFFER,exitVbo);
-		glBufferData(GL_ARRAY_BUFFER,exit_face.size()*sizeof(glm::vec3),&exit_face[0],GL_STATIC_DRAW);
-		glBindVertexArray(exitVao);
-		glDrawArrays(GL_TRIANGLES,0,exit_face.size());
+		trackShaderProgram->SetUniform("flag", 2);
+		glDrawArrays(GL_LINE_STRIP,0,track_points.size());
 	}
 
 	glutSwapBuffers();
@@ -686,8 +697,6 @@ void IdleFunction(void)
 	{
 		camera.setHorizontalAngle(camera.getHorizontalAngle()+delta_x);
 		camera.setVerticalAngle(camera.getVerticalAngle()+delta_y);
-
-	
 	}
 
 	glutPostRedisplay();
@@ -742,17 +751,35 @@ int main(int argc, char* argv[])
  	case 'q':
  		exit(1);
  		break;
- 	case 'w':
+
+	case 'u':
 		camera.setPosition(camera.getPosition()+(camera.forward())*0.1f);
  		break;
- 	case 'a':
+ 	case 'h':
 		camera.setPosition(camera.getPosition()+(-camera.right())*0.1f);
  		break;
-	case 's':
+	case 'j':
 		camera.setPosition(camera.getPosition()+(-camera.forward())*0.1f);
  		break;
-	case 'd':
+	case 'k':
 		camera.setPosition(camera.getPosition()+(camera.right())*0.1f);
+ 		break;
+	
+	//begin the fly motion
+	case 's':
+		bStart = true;
+		animate(0);
+ 		break;
+	
+	//Interrupt the motion
+	case 'i':
+		if(bPause)
+		{
+			bPause = false;
+			animate(0);
+		}else{
+			bPause = true;
+		}
  		break;
  	default:
  		break;

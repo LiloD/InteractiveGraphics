@@ -8,8 +8,8 @@
 class Camera
 {
 public:
-	Camera():_position(0.0f,0.0f,3.0f),
-			_horizontalAngle(3.14f),
+	Camera():_position(-1.5f,0.0f,3.0f),
+			_horizontalAngle(3.14f*150.0f/180.0f),
 			_verticalAngle(0.0f),
 			_up(glm::vec3(0.0f,1.0f,0.0f))
 	{
